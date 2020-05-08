@@ -1,0 +1,28 @@
+Deaconu Andreea-Carina
+334CC
+
+	ASC - Tema 1 Marketplace
+
+Class Producer
+	Besides the parameters passed to the constructor, it also holds its id, its product queue's index in marketplace's list of queues.
+	Infinitely, a producer iterates to its production list and tries to publish the current product in the marketplace, according to the specified quantity. Depending on the response from the marketplace, if the product was added, it waits then add another one; if not (if the queue's capacity has been reached), it waits then retry to add the same one.
+
+Class Consumer
+	Firstly, it is given an id for its cart, as the index in the marketplace's list of carts. A consumer has multiple independent lists of operations to perform 
+before placing an order; each list works with the same cart id, but the cart is emptied after completing a list.
+	After completing a list, the final product list returned is printed.
+
+Class Marketplace
+	It stores a list of producer queues, each producer's queue being a list of Product objects. When a producer registers, its queue's index in this list is returned. 
+	It also stores a list of carts, one for each customer. When a customer asks for a new cart, the index in this list is given. A cart is a list of tuples, with the format (Product object, producer id), so it keeps the producer queue's index from which the product was taken.
+	When removing a product from cart, I make use of this second element of the pair, the producer id, to add the product back to the corresponding produce queue and remove the pair from the customer card.
+	When adding a product to cart, I iterate through every producer queue and check if the desired product is present in the current queue. If so, I remove it from there and mark that I found it, using the was_found variable. In the end, depending on the value of this variable, I add the pair (Product, producer queue index) to the customer's cart.
+	When placing an order, I form a list using list comprehensions with the first element in every pair from the customer cart, aka the Product object, and return it, not before I empty the cart.
+
+Synchronization
+	I defined a lock in the Marketplace class.
+	I use it for registering a new producer or a new customer cart (the implementations are similar) because I need to make sure they are registered in the right order and because the id is based on the current list length of that moment.
+	I also use it when adding to a customer cart to make sure that two different customers don't take the same product.
+	I didn't need it elsewhere because the append, remove and indexing operations I used are thread safe. Moreover, I am sure that some places are only accesed by one thread at the same time, for example:
+a single cart from the list of carts in marketplace will be accessed only by the customer with that specified cart id.
+	
